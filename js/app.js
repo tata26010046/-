@@ -1,6 +1,6 @@
 // 家計ノート（独立版）— GitHub Pages ＋ Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut,
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut,
   signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, doc, onSnapshot, setDoc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { firebaseConfig } from "./firebase-config.js";
@@ -113,11 +113,13 @@ async function loadPhoto(id){
 async function delPhoto(id){if(!id)return;try{if(S.mode==="cloud")await deleteDoc(udoc("photos",id));else await idb.del(id)}catch{}}
 
 /* ===== ログイン画面 ===== */
+const inApp=/Line\/|FBAN|FBAV|Instagram|Twitter|; wv\)|GSA\//i.test(navigator.userAgent);
 function showGate(msg=""){
   $("#app").hidden=true;$("#bnav").hidden=true;const g=$("#gate");g.hidden=false;
   g.innerHTML=`<div class="card">
     <div class="logo"><i></i>家計ノート</div>
     <p class="small muted" style="margin:0">ログインすると、スマホとPCで同じ記録をリアルタイムに使えます。</p>
+    ${inApp?`<div class="status warn">アプリ内ブラウザではGoogleログインが使えません。右上のメニューから「Chromeで開く」（iPhoneは「Safariで開く」）を選ぶか、メールアドレスでログインしてください。</div>`:""}
     ${configured?`
     <button class="btn pri" id="gGoogle">Googleでログイン</button>
     <div class="or">またはメールアドレス</div>
@@ -139,8 +141,9 @@ document.addEventListener("click",async e=>{
   if(t.closest("#gGoogle")){
     const pr=new GoogleAuthProvider();
     try{await signInWithPopup(fb.auth,pr)}catch(err){
-      if(/popup-blocked|operation-not-supported|cancelled-popup/.test(err?.code||""))await signInWithRedirect(fb.auth,pr);
-      else $("#gErr").textContent=authMsg(err)}
+      $("#gErr").textContent=/popup-blocked|operation-not-supported|web-storage-unsupported/.test(err?.code||"")
+        ?"このブラウザではGoogleログインの画面を開けません。Chrome / Safari で開き直すか、メールアドレスでログインしてください"
+        :authMsg(err)}
   }
   if(t.closest("#gSignup")){const m=$("#gMail").value.trim(),p=$("#gPass").value;if(!m||p.length<6){$("#gErr").textContent="メールアドレスと6文字以上のパスワードを入れてください";return}
     try{await createUserWithEmailAndPassword(fb.auth,m,p)}catch(err){$("#gErr").textContent=authMsg(err)}}
@@ -757,7 +760,6 @@ function download(name,text,type){const a=document.createElement("a");a.href=URL
 try{const t=localStorage.getItem(LKEY+"-tab");if(t&&VIEWS[t])S.tab=t}catch{}
 if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 if(fb){
-  getRedirectResult(fb.auth).catch(err=>showGate(authMsg(err)));
   onAuthStateChanged(fb.auth,user=>{
     if(user)startCloud(user);
     else{stopCloud();S.user=null;let local=false;try{local=localStorage.getItem(LKEY+"-localmode")==="1"}catch{}

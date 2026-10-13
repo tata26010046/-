@@ -1,5 +1,5 @@
 // オフライン対応：アプリ本体をキャッシュ（データ同期は Firebase 側が端末内キャッシュで処理）
-const CACHE = "kakei-note-v1";   // ファイルを更新したら番号を上げると全端末に反映されます
+const CACHE = "kakei-note-v2";   // ファイルを更新したら番号を上げると全端末に反映されます
 const SHELL = ["./", "index.html", "css/style.css", "js/app.js", "js/ocr.js", "js/firebase-config.js", "manifest.webmanifest", "icons/icon.svg", "icons/icon-192.png"];
 
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
