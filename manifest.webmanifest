@@ -1,0 +1,17 @@
+{
+  "name": "家計ノート",
+  "short_name": "家計ノート",
+  "description": "レシート読み取り・給料計算・相場メモ・割安計算・収支統計の家計管理アプリ",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#eef2f0",
+  "theme_color": "#1d6b55",
+  "lang": "ja",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
